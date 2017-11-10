@@ -1,0 +1,30 @@
+{
+  "device": {
+    "id": "3D239A1D40394EFFAA19453C08203EB1",
+    "hw_ver": "1.0.0",
+    "fab_date": 1504447200,
+    "cal_date": 1504447200
+  },
+  "firmware": {
+    "current": 0,
+    "data": [
+      {
+        "version": "1.0.0",
+        "beta": true
+      },
+      {
+        "version": "1.0.0",
+        "beta": true
+      }
+    ]
+  },
+  "settings": {
+    "name": "KoppenClima",
+    "locked": false,
+    "pwd": "",
+    "xcoord": "",
+    "ycoord": "",
+    "timezone": -3,
+    "remote": "api.koppenclima.com.br"
+  }
+}
