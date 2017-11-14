@@ -1,5 +1,5 @@
 /*
- * commrest.c
+ * restcomm.c
  *
  *  Created on: Nov 10, 2017
  *      Author: houz03
@@ -26,13 +26,16 @@ void taskRestComm(void *args) {
 	printf("\n\nentrou na taskRestComm\n\n");
 	Request req;
 	req.host = "api.apixu.com";
+	req.port = 80;
 	req.url =
 			"http://api.apixu.com/v1/current.json?key=46712e1bd82748309f9183131172710&q=Londrina";
 	req.body = NULL;
 	req.cacheCtrl = NO_CACHE;
-	req.contLenght = 0;
+	req.contLength = 0;
 	req.contType = CONTENT_JSON;
 	req.restType = GET;
+	req.authType = AUTH_NONE;
+
 
 	Response resp;
 	printf("criou as structs\n");

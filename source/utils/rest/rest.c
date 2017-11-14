@@ -9,12 +9,8 @@
 #include "lwip/api.h"
 #include "lwip/netbuf.h"
 #include "tasks/net_status.h"
+#include "base64/base64.h"
 
-typedef struct {
-	char *host;
-	uint16_t port;
-
-} rest_cfg_t;
 
 char *stringFromRestType(RestType n) {
 
@@ -37,6 +33,15 @@ char *stringFromContType(ContType n) {
 char *stringFromCacheControl(CacheControl n) {
 
 	char *str[] = { "no-cache", "no-store", "no-transform", "only-if-cached" };
+
+	return str[n];
+
+}
+
+char *stringFromAuthType(AuthType n) {
+
+	char *str[] = { "Basic", "Bearer", "Digest", "HOBA", "Mutual",
+			"AWS4-HMAC-SHA256" };
 
 	return str[n];
 
@@ -67,7 +72,7 @@ void rest(Request *req, Response *resp) {
 				netconn_bind(sock, IP_ADDR_ANY, 8080);
 
 				//Connect a netconn to a specific remote IP address and port.
-				if (netconn_connect(sock, &ip, 80) == ERR_OK) {
+				if (netconn_connect(sock, &ip, req->port) == ERR_OK) {
 
 					printf("sock criado\n");
 					err_t e;
@@ -84,9 +89,11 @@ void rest(Request *req, Response *resp) {
 					if (urllen == 0) {
 
 						printf("Invalid URL\n");
-						error = REST_UNKNOWN;
+						error = REST_PARAM;
 
 					} else {
+
+						printf("%s\n", path);
 
 						int headerLen = strlen(
 								stringFromRestType(req->restType)) + 1
@@ -95,38 +102,63 @@ void rest(Request *req, Response *resp) {
 								+ strlen("Content-Type: ")
 								+ strlen(stringFromContType(req->contType)) + 4
 								+ strlen("Cache-Control: ")
-								+ strlen(
-										stringFromCacheControl(req->cacheCtrl));
-						if (req->contLenght != 0) {
-							int headerLen = req->contLenght;
-						}
+								+ strlen(stringFromCacheControl(req->cacheCtrl))
+								+ 4 + strlen("Content-Length: ")
+								+ sizeof(req->contLength) + 8;
+
 						printf("\n\n\nheaderLen:%d\n\n\n", headerLen);
 
-						int bodyLen;
+						int bodyLen = 0;
 						if (req->body != NULL) {
-							 bodyLen = strlen(req->body);
-							printf("bodyLen = %d", bodyLen);
+							bodyLen = strlen(req->body);
+							printf("bodyLen = %d\n", bodyLen);
 						}
 						char *header = malloc(headerLen + bodyLen);
 //						char header[200];
 						printf("malloc\n");
+						printf("%d\n", req->contLength);
 
 						// restType  path  host  contType  cachectrl
-						sprintf(header,
-								"%s %s HTTP/1.1\r\nHost: %s\r\nContent-Type: %s\r\nCache-Control: %s\r\n\r\n",
-								stringFromRestType(req->restType), path,
-								req->host, req->contType, req->cacheCtrl);
-						printf("header formatado\n");
 
-						if (req->contLenght != 0) {
+						if (req->authType == AUTH_NONE) {
 							sprintf(header,
-									("Content-Lenght: %hu", req->contLenght));
+									"%s %s HTTP/1.1\r\nHost: %s\r\nContent-Type: %s\r\nContent-Length: %d\r\nCache-Control: %s\r\n\r\n",
+									stringFromRestType(req->restType), path,
+									req->host,
+									stringFromContType(req->contType),
+									req->contLength,
+									stringFromCacheControl(req->cacheCtrl));
+						} else {
+
+							char *base64buffer;
+							size_t input_len = strlen(req->auth.AuthBasic.user) +strlen(req->auth.AuthBasic.passwd);
+							size_t *output_len;
+
+							base64_encode(){
+
+							}
+
+							sprintf(header,
+									"%s %s HTTP/1.1\r\nHost: %s\r\nContent-Type: %s\r\nContent-Length: %d\r\nAuthorization: %s %s\r\nCache-Control: %s\r\n\r\n",
+									stringFromRestType(req->restType), path,
+									req->host,
+									stringFromContType(req->contType),
+									req->contLength, stringFromAuthType(req->authType), req->auth,
+									stringFromCacheControl(req->cacheCtrl));
 						}
-						printf("header formatado com contlenght\n");
+						printf("header formatado\n");
+						printf("%s\n", header);
+
+//						if (req->contlength != 0) {
+//							sprintf(header,
+//									("Content-Length: %hu", req->contLength));
+//						printf("header formatado com contLength\n");
+//						}
+
 						if (req->body != NULL) {
 							strcat(header, req->body);
+							printf("header formatado com body\n");
 						}
-						printf("header formatado com body\n");
 
 						e = netconn_write(sock, (void * ) header,
 								strlen(header), NETCONN_COPY);
@@ -178,19 +210,23 @@ void rest(Request *req, Response *resp) {
 
 									case (200):
 
+										printf("OK");
 										resp->body = strstr(data, "\r\n\r\n")
 												+ 4;
 										error = REST_OK;
 
 										break;
 									case (403):
+
 										printf("403\nForbidden\n");
 										break;
 									case (404):
-										printf("404\n");
+
+										printf("404\nNot Found");
 										break;
 									default:
 
+										error = REST_UNKNOWN;
 										printf("unkown error\n");
 									}
 

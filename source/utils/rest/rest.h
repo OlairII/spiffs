@@ -15,7 +15,7 @@
 typedef enum {
 	REST_OK,        //
 	REST_MEM,       //
-	RES_PARAM,      //
+	REST_PARAM,      //
 	REST_UNKNOWN,   //
 } RestErr;
 
@@ -40,6 +40,11 @@ typedef enum {
 typedef enum {
 	AUTH_NONE,    //
 	AUTH_BASIC,	  //
+	AUTH_BEARER,  //
+	AUTH_DIGEST,  //
+	AUTH_HOBA,    //
+	AUTH_MUTUAL,  //
+	AUTH_AWS4,    //
 } AuthType;
 
 typedef enum {
@@ -71,7 +76,7 @@ typedef struct {
 	RestType restType;
 	ContType contType;
 	CacheControl cacheCtrl;
-	uint16_t contLenght;
+	uint16_t contLength;
 } Request;
 
 typedef struct {

@@ -64,7 +64,7 @@ void taskGetwforecast(void * args) {
 						e = netconn_write(sock, (void * ) header,
 								strlen(header), NETCONN_COPY);
 
-//						printf("header enviado\n");
+						//						printf("header enviado\n");
 						if (e != ERR_OK) {
 							printf("[ERROR] Failed to send request: %d\n", e);
 						}
@@ -122,7 +122,7 @@ void taskGetwforecast(void * args) {
 
 		}
 
-		vTaskDelay(pdMS_TO_TICKS(300));
+		vTaskDelay(pdMS_TO_TICKS(3000));
 	}
 
 }
