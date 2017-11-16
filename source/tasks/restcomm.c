@@ -37,14 +37,6 @@ void taskRestComm(void *args) {
 	req.restType = GET;
 	req.authType = AUTH_NONE;
 
-//	AuthBasic authBasic;
-//	authBasic.passwd = "JR";
-//	authBasic.user = "olair";
-//
-//	req.auth = &authBasic;
-//
-//	printf("%s\n", (AuthBasic *)req.auth->user);
-
 	Response resp;
 	printf("criou as structs\n");
 	printf("\n\n%s\n\n", req.host);
@@ -59,7 +51,5 @@ void taskRestComm(void *args) {
 			printf("%s", wfdata);
 		}
 		vTaskDelay(pdMS_TO_TICKS(60000));
-
 	}
-
 }

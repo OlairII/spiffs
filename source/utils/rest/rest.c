@@ -130,12 +130,13 @@ RestErr rest(Request *req, Response *resp) {
 									stringFromCacheControl(req->cacheCtrl));
 						} else {
 
-							size_t input_len = strlen(req->auth->user)
-									+ strlen(req->auth->passwd);
-							char *buffb64 = malloc(ceil(input_len / 3) * 4);
-							sprintf(buffb64, "%s:%s", req->auth->user,
-									req->auth->passwd);
-							buffb64 = b64_encode(buffb64, input_len);
+							size_t input_len = strlen(((AuthBasic *)req->auth)->user)
+									+ strlen(((AuthBasic *)req->auth)->passwd);
+							char *strb64 = malloc(ceil(input_len / 3) * 4);
+							char *buffb64 = malloc(input_len);
+							sprintf(buffb64, "%s:%s", ((AuthBasic *)req->auth)->user,
+									((AuthBasic *)req->auth)->passwd);
+							strb64 = b64_encode(buffb64, input_len);
 
 							sprintf(header,
 									"%s %s HTTP/1.1\r\nHost: %s\r\nContent-Type: %s\r\nContent-Length: %d\r\nAuthorization: %s %s\r\nCache-Control: %s\r\n\r\n",
@@ -146,6 +147,7 @@ RestErr rest(Request *req, Response *resp) {
 									stringFromAuthType(req->authType), buffb64,
 									stringFromCacheControl(req->cacheCtrl));
 							free(buffb64);
+							free(strb64);
 
 						}
 						printf("header formatado\n");

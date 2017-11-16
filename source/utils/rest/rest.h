@@ -70,10 +70,9 @@ typedef struct {
 	uint16_t port;
 	uint16_t lport;
 	char *url;
-	char *param;
 	char *body;
 	AuthType authType;
-	AuthBasic *auth;
+	void *auth;
 	RestType restType;
 	ContType contType;
 	CacheControl cacheCtrl;
