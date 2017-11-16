@@ -68,11 +68,12 @@ typedef struct {
 typedef struct {
 	char *host;
 	uint16_t port;
+	uint16_t lport;
 	char *url;
 	char *param;
 	char *body;
 	AuthType authType;
-	void *auth;
+	AuthBasic *auth;
 	RestType restType;
 	ContType contType;
 	CacheControl cacheCtrl;
@@ -84,6 +85,6 @@ typedef struct {
 	char *body;
 } Response;
 
-void rest(Request *req, Response *resp);
+RestErr rest(Request *req, Response *resp);
 
 #endif /* SOURCE_UTILS_REST_REST_H_ */

@@ -26,6 +26,7 @@ void taskRestComm(void *args) {
 	printf("\n\nentrou na taskRestComm\n\n");
 	Request req;
 	req.host = "api.apixu.com";
+	req.lport = 8080;
 	req.port = 80;
 	req.url =
 			"http://api.apixu.com/v1/current.json?key=46712e1bd82748309f9183131172710&q=Londrina";
@@ -36,6 +37,13 @@ void taskRestComm(void *args) {
 	req.restType = GET;
 	req.authType = AUTH_NONE;
 
+//	AuthBasic authBasic;
+//	authBasic.passwd = "JR";
+//	authBasic.user = "olair";
+//
+//	req.auth = &authBasic;
+//
+//	printf("%s\n", (AuthBasic *)req.auth->user);
 
 	Response resp;
 	printf("criou as structs\n");
@@ -44,11 +52,12 @@ void taskRestComm(void *args) {
 	while (1) {
 
 		printf("entrando na func rest\n");
-		rest(&req, &resp);
-		printf("saiu da rest\n");
-		cJSON *response = cJSON_Parse(resp.body);
-		char *wfdata = cJSON_Print(response);
-		printf("%s", wfdata);
+		if (rest(&req, &resp) == REST_OK) {
+			printf("saiu da rest\n");
+			cJSON *response = cJSON_Parse(resp.body);
+			char *wfdata = cJSON_Print(response);
+			printf("%s", wfdata);
+		}
 		vTaskDelay(pdMS_TO_TICKS(60000));
 
 	}

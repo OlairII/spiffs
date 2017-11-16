@@ -9,8 +9,8 @@
 #include "lwip/api.h"
 #include "lwip/netbuf.h"
 #include "tasks/net_status.h"
-#include "base64/base64.h"
-
+#include "utils/base64/b64.h"
+#include "math.h"
 
 char *stringFromRestType(RestType n) {
 
@@ -47,10 +47,10 @@ char *stringFromAuthType(AuthType n) {
 
 }
 
-void rest(Request *req, Response *resp) {
+RestErr rest(Request *req, Response *resp) {
 
 	//
-	RestErr error = 0;
+	RestErr error;
 
 	printf("tentando conectar\n");
 	if (getIsWebConnected()) {
@@ -69,7 +69,7 @@ void rest(Request *req, Response *resp) {
 				netconn_set_recvtimeout(sock, 5000);
 
 				//Bind a netconn to a specific local IP address and port
-				netconn_bind(sock, IP_ADDR_ANY, 8080);
+				netconn_bind(sock, IP_ADDR_ANY, req->lport);
 
 				//Connect a netconn to a specific remote IP address and port.
 				if (netconn_connect(sock, &ip, req->port) == ERR_OK) {
@@ -130,21 +130,23 @@ void rest(Request *req, Response *resp) {
 									stringFromCacheControl(req->cacheCtrl));
 						} else {
 
-							char *base64buffer;
-							size_t input_len = strlen(req->auth.AuthBasic.user) +strlen(req->auth.AuthBasic.passwd);
-							size_t *output_len;
-
-							base64_encode(){
-
-							}
+							size_t input_len = strlen(req->auth->user)
+									+ strlen(req->auth->passwd);
+							char *buffb64 = malloc(ceil(input_len / 3) * 4);
+							sprintf(buffb64, "%s:%s", req->auth->user,
+									req->auth->passwd);
+							buffb64 = b64_encode(buffb64, input_len);
 
 							sprintf(header,
 									"%s %s HTTP/1.1\r\nHost: %s\r\nContent-Type: %s\r\nContent-Length: %d\r\nAuthorization: %s %s\r\nCache-Control: %s\r\n\r\n",
 									stringFromRestType(req->restType), path,
 									req->host,
 									stringFromContType(req->contType),
-									req->contLength, stringFromAuthType(req->authType), req->auth,
+									req->contLength,
+									stringFromAuthType(req->authType), buffb64,
 									stringFromCacheControl(req->cacheCtrl));
+							free(buffb64);
+
 						}
 						printf("header formatado\n");
 						printf("%s\n", header);
@@ -245,6 +247,6 @@ void rest(Request *req, Response *resp) {
 			}
 		}
 	}
-//	return error;
+	return error;
 }
-//mod18:16
+
