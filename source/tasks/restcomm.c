@@ -20,6 +20,8 @@
 #include "tasks/net_status.h"
 #include "utils/rest/rest.h"
 #include "restcomm.h"
+#include "utils/base64/base64.h"
+#include "math.h"
 
 void taskRestComm(void *args) {
 
@@ -37,9 +39,24 @@ void taskRestComm(void *args) {
 	req.restType = GET;
 	req.authType = AUTH_NONE;
 
+	AuthBasic authbasic;
+	authbasic.user = "olair";
+	authbasic.passwd = "JR";
+
+	req.auth = &authbasic;
+
 	Response resp;
 	printf("criou as structs\n");
 	printf("\n\n%s\n\n", req.host);
+
+	size_t input_len = strlen(((AuthBasic *) req.auth)->user) + strlen(":")
+			+ strlen(((AuthBasic *) req.auth)->passwd);
+	char *strb64 = malloc(ceil(input_len / 3) * 4);
+	char *buffb64 = malloc(input_len);
+	sprintf(buffb64, "%s:%s", ((AuthBasic *) req.auth)->user,
+			((AuthBasic *) req.auth)->passwd);
+	strb64 = base64_encode(buffb64, input_len, NULL);
+	printf("\n\n%s\n\n",strb64);
 
 	while (1) {
 

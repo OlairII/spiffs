@@ -9,7 +9,7 @@
 #include "lwip/api.h"
 #include "lwip/netbuf.h"
 #include "tasks/net_status.h"
-#include "utils/base64/b64.h"
+#include "utils/base64/base64.h"
 #include "math.h"
 
 char *stringFromRestType(RestType n) {
@@ -128,15 +128,19 @@ RestErr rest(Request *req, Response *resp) {
 									stringFromContType(req->contType),
 									req->contLength,
 									stringFromCacheControl(req->cacheCtrl));
-						} else {
+						} /*else {
 
-							size_t input_len = strlen(((AuthBasic *)req->auth)->user)
-									+ strlen(((AuthBasic *)req->auth)->passwd);
+							// *******
+							size_t input_len = strlen(
+									((AuthBasic *) req->auth)->user)
+									+ strlen(":")
+									+ strlen(((AuthBasic *) req->auth)->passwd);
 							char *strb64 = malloc(ceil(input_len / 3) * 4);
 							char *buffb64 = malloc(input_len);
-							sprintf(buffb64, "%s:%s", ((AuthBasic *)req->auth)->user,
-									((AuthBasic *)req->auth)->passwd);
-							strb64 = b64_encode(buffb64, input_len);
+							sprintf(buffb64, "%s:%s",
+									((AuthBasic *) req->auth)->user,
+									((AuthBasic *) req->auth)->passwd);
+							strb64 = base64_encode(buffb64, input_len, NULL);
 
 							sprintf(header,
 									"%s %s HTTP/1.1\r\nHost: %s\r\nContent-Type: %s\r\nContent-Length: %d\r\nAuthorization: %s %s\r\nCache-Control: %s\r\n\r\n",
@@ -149,7 +153,7 @@ RestErr rest(Request *req, Response *resp) {
 							free(buffb64);
 							free(strb64);
 
-						}
+						}*/
 						printf("header formatado\n");
 						printf("%s\n", header);
 
