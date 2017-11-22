@@ -60,22 +60,26 @@ RestErr rest(Request *req, Response *resp) {
 
 		//return the server IP
 		if (netconn_gethostbyname(req->host, &ip) == ERR_OK) {
-			printf("pegou o ip\n");
+			printf("pegou o ip:%d\n", ip);
 			struct netconn *sock = NULL;
 
 			//create a new netconn connection TCPIPv4
 			if ((sock = netconn_new(NETCONN_TCP)) != NULL) {
+				printf("sock criado\n");
 				//set the receiver timeout
 				netconn_set_recvtimeout(sock, 5000);
 
 				//Bind a netconn to a specific local IP address and port
 				netconn_bind(sock, IP_ADDR_ANY, req->lport);
+				printf("sock bindado\n");
 
+				err_t e = netconn_connect(sock, &ip, req->port);
+
+				printf("%d\n", e);
 				//Connect a netconn to a specific remote IP address and port.
-				if (netconn_connect(sock, &ip, req->port) == ERR_OK) {
+				if (e == ERR_OK) {
 
-					printf("sock criado\n");
-					err_t e;
+					printf("sock configurado\n");
 
 					int urllen = strlen(req->url);
 
@@ -165,7 +169,7 @@ RestErr rest(Request *req, Response *resp) {
 
 						if (req->body != NULL) {
 							strcat(header, req->body);
-							printf("header formatado com body\n");
+							printf("header formatado com body:%s\n", header);
 						}
 
 						e = netconn_write(sock, (void * ) header,
@@ -235,7 +239,7 @@ RestErr rest(Request *req, Response *resp) {
 									default:
 
 										error = REST_UNKNOWN;
-										printf("unkown error\n");
+										printf("unkown error:%d\n", resp->status);
 									}
 
 								}

@@ -67,8 +67,8 @@ typedef struct {
 
 typedef struct {
 	char *host;
-	uint16_t port;
 	uint16_t lport;
+	uint16_t port;
 	char *url;
 	char *body;
 	AuthType authType;
