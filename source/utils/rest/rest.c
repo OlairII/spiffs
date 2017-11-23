@@ -55,50 +55,34 @@ RestErr rest(Request *req, Response *resp) {
 	printf("tentando conectar\n");
 	if (getIsWebConnected()) {
 
-		printf("Conectado\n");
 		ip_addr_t ip;
 
 		//return the server IP
 		if (netconn_gethostbyname(req->host, &ip) == ERR_OK) {
-			printf("pegou o ip:%d\n", ip);
 			struct netconn *sock = NULL;
 
 			//create a new netconn connection TCPIPv4
 			if ((sock = netconn_new(NETCONN_TCP)) != NULL) {
-				printf("sock criado\n");
 				//set the receiver timeout
 				netconn_set_recvtimeout(sock, 5000);
 
 				//Bind a netconn to a specific local IP address and port
 				netconn_bind(sock, IP_ADDR_ANY, req->lport);
-				printf("sock bindado\n");
 
 				err_t e = netconn_connect(sock, &ip, req->port);
 
-				printf("%d\n", e);
 				//Connect a netconn to a specific remote IP address and port.
 				if (e == ERR_OK) {
-
-					printf("sock configurado\n");
-
 					int urllen = strlen(req->url);
-
 					char *path = req->url + 8;
 					while ((*path != '/') && (urllen > 0)) {
-
 						path++;
 						urllen--;
-
 					}
 					if (urllen == 0) {
-
 						printf("Invalid URL\n");
 						error = REST_PARAM;
-
 					} else {
-
-						printf("%s\n", path);
-
 						int headerLen = strlen(
 								stringFromRestType(req->restType)) + 1
 								+ +strlen(path) + 1 + strlen("HTTP/1.1") + 4
@@ -110,19 +94,11 @@ RestErr rest(Request *req, Response *resp) {
 								+ 4 + strlen("Content-Length: ")
 								+ sizeof(req->contLength) + 8;
 
-						printf("\n\n\nheaderLen:%d\n\n\n", headerLen);
-
 						int bodyLen = 0;
 						if (req->body != NULL) {
 							bodyLen = strlen(req->body);
-							printf("bodyLen = %d\n", bodyLen);
 						}
 						char *header = malloc(headerLen + bodyLen);
-//						char header[200];
-						printf("malloc\n");
-						printf("%d\n", req->contLength);
-
-						// restType  path  host  contType  cachectrl
 
 						if (req->authType == AUTH_NONE) {
 							sprintf(header,
@@ -132,9 +108,8 @@ RestErr rest(Request *req, Response *resp) {
 									stringFromContType(req->contType),
 									req->contLength,
 									stringFromCacheControl(req->cacheCtrl));
-						} /*else {
+						} else {
 
-							// *******
 							size_t input_len = strlen(
 									((AuthBasic *) req->auth)->user)
 									+ strlen(":")
@@ -157,19 +132,10 @@ RestErr rest(Request *req, Response *resp) {
 							free(buffb64);
 							free(strb64);
 
-						}*/
-						printf("header formatado\n");
-						printf("%s\n", header);
-
-//						if (req->contlength != 0) {
-//							sprintf(header,
-//									("Content-Length: %hu", req->contLength));
-//						printf("header formatado com contLength\n");
-//						}
+						}
 
 						if (req->body != NULL) {
 							strcat(header, req->body);
-							printf("header formatado com body:%s\n", header);
 						}
 
 						e = netconn_write(sock, (void * ) header,
@@ -197,7 +163,6 @@ RestErr rest(Request *req, Response *resp) {
 								char *data;
 								u16_t len;
 
-								//verificar o tamanho ???
 								e = netbuf_data(rb, (void **) &data, &len);
 								if (e != ERR_OK) {
 
@@ -208,16 +173,10 @@ RestErr rest(Request *req, Response *resp) {
 
 								} else {
 
-//								char *stcode = malloc(4 * sizeof(char));
-//								strncpy(stcode, data + 9, 3);
-//								resp->status = atoi(stcode);
-//								free(stcode);
-
 									char *endptr;
 									resp->status = strtol(&data[9], &endptr,
 											10);
 
-									//analisa o status code
 									switch (resp->status) {
 
 									case (200):
@@ -239,7 +198,8 @@ RestErr rest(Request *req, Response *resp) {
 									default:
 
 										error = REST_UNKNOWN;
-										printf("unkown error:%d\n", resp->status);
+										printf("unkown error:%d\n",
+												resp->status);
 									}
 
 								}
