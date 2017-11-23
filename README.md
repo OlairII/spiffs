@@ -17,28 +17,28 @@ The Request struct contains the following variables.
     -uint16_t port;
      	The port that the host server are using.
     -char *url;
-	The url must have this format: http://exampleurl.com/path
+	    The url must have this format: http://exampleurl.com/path
     -char *body;
-	If you want to send an empty body just declare it NULL.
+	    If you want to send an empty body just declare it NULL.
     -AuthType authType;
-	This library just suport the basic authentication method(AUTH_BASIC). For no authentication use AUTH_NONE.
+	    This library just suport the basic authentication method(AUTH_BASIC). For no authentication use AUTH_NONE.
     -void *auth;
-	This void pointer is used to point to a struct that has username and password( in case you use basic auth). 
+	    This void pointer is used to point to a struct that has username and password( in case you use basic auth). 
     -RestType restType;
-	An enumarete that list the http request type
+	    An enumarete that list the http request type
     -ContType contType;
-	An enumerate that list the http content type
+	    An enumerate that list the http content type
     -CacheControl cacheCtrl;
-	The cache control
+	    The cache control
     -uint16_t contLength;
-	Content Length. If you don't know the content lentgh declare it equals zero.
+	    Content Length. If you don't know the content lentgh declare it equals zero.
 
 The Response struct contains two variables.
     
     -uint16_t status;
-        The http status code
+        The http status code.
     -char *body;
-	The body already formated without the header.
+	    The body already formated without the header.
 
 
 
