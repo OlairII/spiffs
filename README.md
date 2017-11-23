@@ -1,10 +1,10 @@
 ### Introduction
 
-RESTful api
+Almost a RESTful api
 
-This api was created to use the HTTP protocol in the ESP8266 MCU.
+With this api you can create an HTTP client in ESP8266 MCU.
 
-This api uses the LwIP V1.4.1. The rest function has the task to format an http header and send it to the specified host. As result you have the returned http header. You have to pass two parameters, Request and Response. Both parameters are struct.
+This api uses the LwIP V1.4.1. to create, configure and delete a network socket. The first thing that rest function do is verify if the mcu have a wifi connection( using the getIsWebConnected function). After that it uses the LwIP functions to create and configure a sock. Then the rest function has the task to format an http header, send it to the specified host and recive the host response. You have to pass two parameters, Request and Response. Both parameters are struct.
 
 The Request struct contains the following variables.
 
@@ -32,8 +32,8 @@ The Response struct contains two variables.
     
     -uint16_t status;
         the http status code
-	-char *body;
-        the body already formated without the header.
+    -char *body;
+	the body already formated without the header.
 
 
 
