@@ -20,7 +20,7 @@
 #include "tasks/startup.h"
 #include "tasks/local_udp.h"
 //#include "tasks/getwforecast.h"
-//#include "tasks/restcomm.h"
+#include "tasks/restcomm.h"
 #include "tasks/spiffs_test.h"
 
 
@@ -98,7 +98,7 @@ void startSntp() {
 
 void createTasks() {
 //	xTaskCreate(taskRestComm, "Rest Communication", 500, NULL, 3, NULL);
-	xTaskCreate(taskSpiffsTest, "SPIFFS test", 500, NULL, 3, NULL);
+	xTaskCreate(taskSpiffsTest, "SPIFFS test", 700, NULL, 3, NULL);
 //	xTaskCreate(taskGetwforecast, "Weather Forecast", 500, NULL, 3, NULL);
 //  xTaskCreate(taskMeasure, "Measurements", 500, NULL, 3, NULL);
 //  xTaskCreate(taskLocalUdp, "Local UDP", 500, NULL, 3, NULL);

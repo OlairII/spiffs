@@ -25,10 +25,11 @@
 
 void taskRestComm(void *args) {
 
-	/*printf("\n\nentrou na taskRestComm\n\n");
+	printf("\n\nentrou na taskRestComm\n\n");
 	Request req;
 	req.host = "api.apixu.com";
 	req.port = 8080;
+	req.lport = 8000;
 	req.url =
 			"http://api.apixu.com/v1/current.json?key=46712e1bd82748309f9183131172710&q=Londrina";
 	req.body = NULL;
@@ -38,16 +39,19 @@ void taskRestComm(void *args) {
 	req.restType = GET;
 	req.authType = AUTH_NONE;
 
+	/*
 	AuthBasic authbasic;
 	authbasic.user = "olair";
 	authbasic.passwd = "JR";
 
-	req.auth = &authbasic;
+	req.auth = &authbasic;*/
 
 	Response resp;
+
 	printf("criou as structs\n");
 	printf("\n\n%s\n\n", req.host);
 
+	/*
 	size_t input_len = strlen(((AuthBasic *) req.auth)->user) + strlen(":")
 			+ strlen(((AuthBasic *) req.auth)->passwd);
 	char *strb64 = malloc(ceil(input_len / 3) * 4);
@@ -55,10 +59,11 @@ void taskRestComm(void *args) {
 	sprintf(buffb64, "%s:%s", ((AuthBasic *) req.auth)->user,
 			((AuthBasic *) req.auth)->passwd);
 	strb64 = base64_encode(buffb64, input_len, NULL);
-	printf("\n\n%s\n\n",strb64);
+	printf("\n\n%s\n\n",strb64);*/
 
-	*/
 
+
+	/*
 	Request req;
 	req.host = "httpbin.org";
 	req.port = 80;
@@ -69,9 +74,9 @@ void taskRestComm(void *args) {
 	req.contLength = strlen(req.body);
 	req.contType = CONTENT_RAW;
 	req.restType = POST;
-	req.authType = AUTH_NONE;
+	req.authType = AUTH_NONE;*/
 
-	Response resp;
+
 
 	while (1) {
 
@@ -79,9 +84,9 @@ void taskRestComm(void *args) {
 		if (rest(&req, &resp) == REST_OK) {
 			printf("saiu da rest\n");
 			printf("%s\n", resp.body);
-//			cJSON *response = cJSON_Parse(resp.body);
-//			char *wfdata = cJSON_Print(response);
-//			printf("%s", wfdata);
+			cJSON *response = cJSON_Parse(resp.body);
+			char *wfdata = cJSON_Print(response);
+			printf("%s", wfdata);
 		}
 		vTaskDelay(pdMS_TO_TICKS(60000));
 	}

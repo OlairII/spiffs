@@ -50,24 +50,28 @@ char *stringFromAuthType(AuthType n) {
 RestErr rest(Request *req, Response *resp) {
 
 	//
-	RestErr error;
+	RestErr error = REST_UNKNOWN;
 
-	printf("tentando conectar\n");
+
 	if (getIsWebConnected()) {
 
+		printf("conectado\n");
 		ip_addr_t ip;
 
 		//return the server IP
 		if (netconn_gethostbyname(req->host, &ip) == ERR_OK) {
+			printf("pegou o nome do host\n");
 			struct netconn *sock = NULL;
 
 			//create a new netconn connection TCPIPv4
 			if ((sock = netconn_new(NETCONN_TCP)) != NULL) {
+				printf("sock criado\n");
 				//set the receiver timeout
 				netconn_set_recvtimeout(sock, 5000);
 
 				//Bind a netconn to a specific local IP address and port
 				netconn_bind(sock, IP_ADDR_ANY, req->lport);
+				printf("sock bindado\n");
 
 				err_t e = netconn_connect(sock, &ip, req->port);
 
