@@ -7,7 +7,6 @@
 
 #include "spiffs.h"
 #include "spiffs_nucleus.h"
-#include "esp_spiffs.h"
 
 static s32_t spiffs_fflush_cache(spiffs *fs, spiffs_file fh);
 
@@ -52,7 +51,7 @@ s32_t SPIFFS_format(spiffs *fs) {
   return 0;
 }
 
-s32_t SPIFFS_mount(spiffs *fs, esp_spiffs_config *config, u8_t *work,
+s32_t SPIFFS_mount(spiffs *fs, spiffs_config *config, u8_t *work,
     u8_t *fd_space, u32_t fd_space_size,
     void *cache, u32_t cache_size,
     spiffs_check_callback check_cb_f) {

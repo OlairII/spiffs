@@ -15,8 +15,8 @@
 #include "lwip/netbuf.h"
 #include "utils/spiffs/esp_spiffs.h"
 #include "utils/spiffs/spiffs.h"
-//#include "fcntl.h"
-//#include "unistd.h"
+#include "fcntl.h"
+#include "unistd.h"
 
 #include "dev_config.h"
 #include "driver/uart.h"
@@ -35,6 +35,7 @@
 
 void taskSpiffsTest(void *args) {
 
+	/*
 	static spiffs fs;
 
 	static u8_t spiffs_work_buf[LOG_PAGE_SIZE * 2];
@@ -77,49 +78,47 @@ void taskSpiffsTest(void *args) {
 		printf("errno %i\n", SPIFFS_errno(&fs));
 	SPIFFS_close(&fs, fd);
 
-	printf("--> %s <--\n", buf);
+	printf("--> %s <--\n", buf);*/
 
-////////
-//	struct esp_spiffs_config config;
-//	config.phys_size = FS1_FLASH_SIZE;
-//	config.phys_addr = FS1_FLASH_ADDR;
-//	config.phys_erase_block = SECTOR_SIZE;
-//	config.log_block_size = LOG_BLOCK;
-//	config.log_page_size = LOG_PAGE;
-//	config.fd_buf_size = FD_BUF_SIZE * 2;
-//	config.cache_buf_size = CACHE_BUF_SIZE;
-//	esp_spiffs_init(&config);
-//
-//	char *buf = "hello	world";
-//
-//	char out[20] = { 0 };
-//
-//	int pfd = open("myfile", O_TRUNC | O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-//
-//	if (pfd <= 3) {
-//
-//		printf("open	file	error	\n");
-//
-//	}
-//
-//	int write_byte = write(pfd, buf, strlen(buf));
-//
-//	if (write_byte <= 0) {
-//
-//		printf("write	file	error	\n");
-//
-//	}
-//
-//	close(pfd);
-//
-//	open("myfile", O_RDWR);
-//	if(read(pfd, out, 20) < 0 ){
-//		printf("read error\n");
-//	}
-//	close(pfd);
-//	printf("%s\n", out);
 
-//////
+	struct esp_spiffs_config config;
+	config.phys_size = FS1_FLASH_SIZE;
+	config.phys_addr = FS1_FLASH_ADDR;
+	config.phys_erase_block = SECTOR_SIZE;
+	config.log_block_size = LOG_BLOCK;
+	config.log_page_size = LOG_PAGE;
+	config.fd_buf_size = FD_BUF_SIZE * 2;
+	config.cache_buf_size = CACHE_BUF_SIZE;
+	esp_spiffs_init(&config);
+
+	char *buf = "hello	world";
+
+	char out[20] = { 0 };
+
+	int pfd = open("myfile", O_TRUNC | O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+
+	if (pfd <= 3) {
+
+		printf("open	file	error	\n");
+
+	}
+
+	int write_byte = write(pfd, buf, strlen(buf));
+
+	if (write_byte <= 0) {
+
+		printf("write	file	error	\n");
+
+	}
+
+	close(pfd);
+
+	open("myfile", O_RDWR);
+	if(read(pfd, out, 20) < 0 ){
+		printf("read error\n");
+	}
+	close(pfd);
+	printf("%s\n", out);
 
 	while (1) {
 
