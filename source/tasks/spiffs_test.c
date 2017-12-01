@@ -48,36 +48,8 @@ void taskSpiffsTest(void *args) {
 	config.cache_buf_size = CACHE_BUF_SIZE;
 	esp_spiffs_init(&config);
 
-	/*
-	 char *buf = "hello	world";
-
-	 char out[20] = { 0 };
-
-	 int pfd = open("myfile", O_TRUNC | O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-
-	 if (pfd <= 3) {
-
-	 printf("open	file	error	\n");
-
-	 }
-
-	 int write_byte = write(pfd, buf, strlen(buf));
-
-	 if (write_byte <= 0) {
-
-	 printf("write	file	error	\n");
-
-	 }
-
-	 close(pfd);
-
-	 open("myfile", O_RDWR);
-	 if(read(pfd, out, 20) < 0 ){
-	 printf("read error\n");
-	 }
-	 close(pfd);
-	 printf("%s\n", out);
-	 */
+	spiffs wat;
+	wat.cfg = config;
 
 	printf("\n\nentrou na taskRestComm\n\n");
 	Request req;
@@ -107,29 +79,31 @@ void taskSpiffsTest(void *args) {
 
 			char *buf = wfdata;
 			size_t datalen = strlen(wfdata);
-			char *out = malloc(datalen+1);
+			char *out = malloc(datalen + 1);
 
-			int pfd = open("myfile", O_TRUNC | O_CREAT | O_RDWR,
-			S_IRUSR | S_IWUSR);
+			int pfd = SPIFFS_open(&wat, "test.txt", SPIFFS_CREAT | SPIFFS_RDWR, 0);
 
-			if (pfd <= 3) {
+			if (pfd < 0 ) {
 
 				printf("open	file	error	\n");
 
 			}
 
-			int write_byte = write(pfd, buf, strlen(buf));
+			int write_byte = SPIFFS_write(&wat, pfd, buf, strlen(buf));
 
-			if (write_byte <= 0) {
+			if (write_byte != 0) {
 
-				printf("write	file	error	\n");
+				printf("write	file	error: %d\n", write_byte);
 
 			}
 
-			close(pfd);
+			SPIFFS_close();
 
-			pfd = open("myfile", O_RDWR);
+			pfd = SPIFFS_open(&wat, "test.txt", SPIFFS_RDONLY, 0);
 
+			if(pfd != 0){
+				printf("open file error \n");
+			}
 			if (read(pfd, out, datalen) < 0) {
 				printf("read error\n");
 			}
