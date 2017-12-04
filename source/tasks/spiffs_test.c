@@ -36,6 +36,44 @@
 
 #define LOG_PAGE_SIZE       256
 
+void write_file_SPIFFS(void *buf, int data_len, char * file_name) {
+
+	int pfd = open(file_name, O_CREAT | O_WRONLY, 0);
+	if (pfd <= 3) {
+		printf("Error opening file: %d\n", pfd);
+		return;
+	}
+
+	int write_byte = write(pfd, buf, data_len);
+
+	if (write_byte <= 0) {
+
+		printf("write file error: %d\n", write_byte);
+		return;
+	}
+
+	close(pfd);
+}
+
+void read_file_SPIFFS(char *buf, int data_len, char *file_name) {
+
+	buf = malloc(data_len + 1);
+	int pfd = open(file_name, O_RDONLY, 0);
+
+	if (pfd <= 3) {
+		printf("open file error: %d\n", pfd);
+		return;
+	}
+	if (read(pfd, buf, data_len) < 0) {
+		printf("read error: %d\n", pfd);
+		return;
+	}
+
+//	buf[data_len] = '\0';
+//	printf("2\n%s\n", buf);
+	close(pfd);
+}
+
 void taskSpiffsTest(void *args) {
 
 	struct esp_spiffs_config config;
@@ -46,10 +84,8 @@ void taskSpiffsTest(void *args) {
 	config.log_page_size = LOG_PAGE;
 	config.fd_buf_size = FD_BUF_SIZE * 2;
 	config.cache_buf_size = CACHE_BUF_SIZE;
+	//test if esp_spiffs_init == 0 ???
 	esp_spiffs_init(&config);
-
-	spiffs wat;
-	wat.cfg = config;
 
 	printf("\n\nentrou na taskRestComm\n\n");
 	Request req;
@@ -77,40 +113,11 @@ void taskSpiffsTest(void *args) {
 			char *wfdata = cJSON_Print(response);
 			printf("1\n%s\n", wfdata);
 
-			char *buf = wfdata;
-			size_t datalen = strlen(wfdata);
-			char *out = malloc(datalen + 1);
-
-			int pfd = SPIFFS_open(&wat, "test.txt", SPIFFS_CREAT | SPIFFS_RDWR, 0);
-
-			if (pfd < 0 ) {
-
-				printf("open	file	error	\n");
-
-			}
-
-			int write_byte = SPIFFS_write(&wat, pfd, buf, strlen(buf));
-
-			if (write_byte != 0) {
-
-				printf("write	file	error: %d\n", write_byte);
-
-			}
-
-			SPIFFS_close();
-
-			pfd = SPIFFS_open(&wat, "test.txt", SPIFFS_RDONLY, 0);
-
-			if(pfd != 0){
-				printf("open file error \n");
-			}
-			if (read(pfd, out, datalen) < 0) {
-				printf("read error\n");
-			}
-			close(pfd);
-			out[datalen] = '\0';
-			printf("2\n%s\n", out);
-			free(out);
+			char *buffer;
+			write_file_SPIFFS(wfdata, strlen(wfdata), "test");
+			read_file_SPIFFS(buffer, strlen(wfdata), "test");
+			buffer[strlen(wfdata)] = '\0';
+			printf("3%s\n", buffer);
 
 		}
 

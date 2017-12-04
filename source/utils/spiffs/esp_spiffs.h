@@ -43,6 +43,7 @@ extern "C" {
   */
 
 
+static spiffs fs;
 
 
 struct esp_spiffs_config {

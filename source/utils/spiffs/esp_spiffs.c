@@ -7,7 +7,7 @@
 
 #define NUM_SYS_FD 3
 
-static spiffs fs;
+
 
 static u8_t *spiffs_work_buf;
 static u8_t *spiffs_fd_buf;
